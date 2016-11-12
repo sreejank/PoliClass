@@ -48,6 +48,7 @@ for elem in text_list:
 				a = unicodedata.normalize('NFKD', a).encode('ascii','ignore')
 			if(a[-1] == '.'):
 				a = a[0:-1]
+			a = a.lower()
 			string.append(a)
 
 
