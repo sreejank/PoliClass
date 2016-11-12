@@ -1,0 +1,94 @@
+<html>
+<head>
+	<title>Check My Links: Options</title>
+	<link rel="stylesheet" type="text/css" href="css/options_style.css" />
+</head>
+<body>
+	<div id="content">
+		<h1 id="logo">Check My Links: Options</h1>
+		<p>To prevent this extension from checking a link, please enter all or part of the URL in the blacklist below. Each URL must be entered on a new line.</p>
+
+		<p style="line-height: 26px">For example: <span>www.mydomain.com</span> will prevent the following links from being checked: <span>www.mydomain.com/page1.html</span> or <span>www.mydomain.com/page2.html</span></p>
+
+		<label for="blacklistEntries">Exclude links from these domains:</label><br/>
+		<textarea name="blacklistEntries" id="blacklistEntries" rows="2" cols="20"></textarea>
+		<hr/>
+
+		<label for="requestType">Method of Request: </label> 
+
+
+		<select id="requestType">
+			<option value="GET">GET</option>
+			<option value="HEAD">HEAD</option>			
+		</select>
+
+
+		<p>HEAD is quicker, but sometimes doesn't reflect the true HTTP status of a page, use GET if you're getting weird results.  GET is required to be able to parse the document for an element corresponding to what is after the hashtag by ID.</p>
+
+		<hr/>
+		<h3>Warnings</h3>
+		
+		<label for="parseDOM">Parse DOM after hashtag (#): </label> <input type="checkbox" name="parseDOM" id="parseDOM" value="1">
+		<p>Hashtags can link to elements by id within the DOM. Enabling will add add the check to make sure an element exists by id to correspond to the hashtag.  When enabled, if the page resolves but the corresponding element is not found, the element will be marked as a warning and shown in the console.log (F12->Console tab). <strong>Request Type: GET is required</strong></p>
+		
+		<label for="trailingHash">Trailing '#' (href="#"): </label> <input type="checkbox" name="trailingHash" id="trailingHash" value="1">
+		<p>When enabled, if the link url endswith '#' you will be warned.</p>
+
+		<label for="emptyLink">Empty Link (href=""): </label> <input type="checkbox" name="emptyLink" id="emptyLink" value="1">
+		<p>When enabled, if the link url endswith '#' you will be warned.</p>
+
+		<label for="noHrefAttr">Anchor tag without href (<a>No Link</a>): </label> <input type="checkbox" name="noHrefAttr" id="noHrefAttr" value="1">
+		<p>When enabled, if there is an anchor tag without an 'href' attribute you will be warned.</p>
+		
+		<hr/>
+
+		<strong>Valid Link Caching</strong>
+		<p>If you don't want to constantly re-check good (green, HTTP 200) links, enable the option below to force the extension to only check links which were previously broken (red, HTTP 404 etc). Enabling 'Valid Link Caching' vastly reduces the time it will take to repeatedly check a page.</p>
+
+		<label for="cache">Cache Valid Links: </label> <input type="checkbox" name="cache" id="cache" value="1">
+
+		<div class="buttons">
+			<button id="clearCache">Clear Cache</button>
+		</div>
+
+		<div id="msgCache" style="visibility: hidden;">Cache cleared!</div>
+
+		<hr/>
+		<strong>Nofollow Links</strong>
+		<p>By default, Check My Links will not check links with a link rel attribute of 'nofollow', you should apply this attribute to links you don't want the extension to trigger (such as Log Out, Sign Out links etc).</p>
+		    <strong>Check Links with rel="nofollow":<strong> <input type="checkbox" name="noFollow" id="noFollow" value="1"><br />
+    <hr/>
+
+		<div id="support">
+
+			<p>Support this extension by contributing towards its upkeep, every little donation helps: </p>
+
+			<p>
+
+				<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+					<input type="hidden" name="cmd" value="_s-xclick">
+					<input type="hidden" name="hosted_button_id" value="BDPC3R58JU9F6">
+					<input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
+					<img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+				</form>
+
+			</p>
+
+			<p><a href="http://flattr.com/thing/474052/Check-My-Links" target="_blank">
+				<img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></p>
+			</div>
+			<hr/>
+			<div class="buttons">
+				<button id="save">Save my preferences</button>
+			</div>
+			<div id="msg" style="visibility: hidden;">Preferences Saved!</div>
+
+		</div>
+
+		<div class="footer">
+			<a href="http://twitter.com/ocodia">By Paul Livingstone</a> - <a href="https://github.com/ocodia/Check-My-Links/wiki">Wiki</a> - <a href="https://github.com/ocodia/Check-My-Links/issues">Report an issue</a> - <a href="https://github.com/ocodia/Check-My-Links">Fork me on Github</a>- <a href="tests/index.html">QUnit Tests</a>
+		</div>
+		<script src="db.js"></script>
+		<script src="options.js"></script>
+	</body>
+	</html>
