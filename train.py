@@ -7,9 +7,9 @@ from math import log
 word_counts={}
 
 #Function for sorting key words. 
-def seperationFunction(d,r):
+def seperationFunction(d,r,alpha=0.1):
 	alpha=0.1
-	ratio=abs(float(d-r)/float(d+r))
+	ratio=abs(float(d-r)/float(max(d,r)))
 	logarithm=log(d+r)
 	logarithm=logarithm**alpha
 	return ratio*logarithm
@@ -45,12 +45,7 @@ def process_all_files(PATH):
 
 
 
-process_all_files('convote_v1.1/data_stage_two/training_set/')
-process_all_files('convote_v1.1/data_stage_one/training_set/')
-process_all_files('convote_v1.1/data_stage_one/development_set/')
-process_all_files('convote_v1.1/data_stage_two/development_set/')
-process_all_files('convote_v1.1/data_stage_three/training_set/')
-process_all_files('convote_v1.1/data_stage_three/development_set/')
+
 
 def plotWords():
 	differences=[]
@@ -64,13 +59,23 @@ def plotWords():
 
 
 
+def printWords(alpha=0.1):
+	process_all_files('convote_v1.1/data_stage_two/training_set/')
+	process_all_files('convote_v1.1/data_stage_one/training_set/')
+	process_all_files('convote_v1.1/data_stage_one/development_set/')
+	process_all_files('convote_v1.1/data_stage_two/development_set/')
+	process_all_files('convote_v1.1/data_stage_three/training_set/')
+	process_all_files('convote_v1.1/data_stage_three/development_set/')
+
+	words=sorted(word_counts.keys(), key=lambda x: seperationFunction(word_counts[x][0],word_counts[x][1]),reverse=True)
+
+	outputfilename="Word_Counts.csv"
+	target=open(outputfilename,'w')
+	target.write("Word, Democrat, Republican\n")
+	for word in words:
+		target.write(word+","+str(word_counts[word][0])+","+str(word_counts[word][1])+","+str(seperationFunction(word_counts[word][0],word_counts[word][1],alpha)))
+		target.write("\n")
 
 
-words=sorted(word_counts.keys(), key=lambda x: seperationFunction(word_counts[x][0],word_counts[x][1]),reverse=True)
+printWords()
 
-outputfilename="Word_Counts.csv"
-target=open(outputfilename,'w')
-target.write("Word, Democrat, Republican\n")
-for word in words:
-	target.write(word+","+str(word_counts[word][0])+","+str(word_counts[word][1]))
-	target.write("\n")
