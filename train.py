@@ -1,6 +1,5 @@
 import nltk
 import os
-import matplotlib.pyplot as plt
 from math import log
 
 #Maps word to [democratCount,republicanCount] list.
@@ -43,14 +42,28 @@ def process_all_files(PATH):
 							isDemocrat=(filename[-7]=="D")
 							process_word(word,isDemocrat)
 
+def process_file(PATH, isDemocrat):
+	print("Processing " + PATH)
+	with open(PATH,'r') as file:
+		if ".txt" in PATH:
+			for line in file:
+				tokens = nltk.wordpunct_tokenize(line.lower())
+				for word in tokens:
+					if word.isalpha():
+						process_word(word, isDemocrat)
 
 
-process_all_files('convote_v1.1/data_stage_two/training_set/')
-process_all_files('convote_v1.1/data_stage_one/training_set/')
-process_all_files('convote_v1.1/data_stage_one/development_set/')
-process_all_files('convote_v1.1/data_stage_two/development_set/')
-process_all_files('convote_v1.1/data_stage_three/training_set/')
-process_all_files('convote_v1.1/data_stage_three/development_set/')
+
+# process_all_files('convote_v1.1/data_stage_two/training_set/')
+# process_all_files('convote_v1.1/data_stage_one/training_set/')
+# process_all_files('convote_v1.1/data_stage_one/development_set/')
+# process_all_files('convote_v1.1/data_stage_two/development_set/')
+# process_all_files('convote_v1.1/data_stage_three/training_set/')
+# process_all_files('convote_v1.1/data_stage_three/development_set/')
+
+process_file("training/texts/prolife/focusonlife.txt", False)
+process_file("training/texts/prolife/prolifealliance.txt", False)
+process_file("training/texts/prochoice/naral.txt", True)
 
 def plotWords():
 	differences=[]
