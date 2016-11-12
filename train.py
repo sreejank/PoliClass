@@ -1,6 +1,7 @@
-import nltk
+from nltk import TweetTokenizer
 import os
 from math import log
+import re
 
 #Maps word to [democratCount,republicanCount] list.
 word_counts={}
@@ -12,8 +13,9 @@ def seperationFunction(d,r,alpha=0.1):
 	logarithm=log(d+r)
 	logarithm=logarithm**alpha
 	return ratio*logarithm
-	
 
+def is_valid_word(string):
+	return (re.search('[a-zA-Z]', string) is not None) and string[0] != '@' and string[0] != '#' and '://' not in string
 
 def process_word(word,isDemocrat):
 	global word_counts
@@ -30,15 +32,16 @@ def process_word(word,isDemocrat):
 
 #PATH = 'convote_v1.1/data_stage_two/training_set/'
 def process_all_files(PATH):
+	tokenizer = TweetTokenizer()
 	print("Processing directory "+PATH)
 	for filename in os.listdir(PATH):
 		print("Processing "+filename)
 		with open(PATH+filename,'r') as file:
 			if ".txt" in filename:
 				for line in file:
-					tokens = nltk.wordpunct_tokenize(line.lower())
+					tokens = tokenizer.tokenize(line.lower())
 					for word in tokens:
-						if word.isalpha():
+						if is_valid_word(word):
 							isDemocrat=(filename[-5]=="d")
 							process_word(word,isDemocrat)
 
@@ -83,8 +86,11 @@ def printWords(alpha=0.1):
 	# process_all_files('convote_v1.1/data_stage_three/training_set/')
 	# process_all_files('convote_v1.1/data_stage_three/development_set/')
 
-	process_all_files("training/texts/issues/abortion/")
-	process_all_files("training/texts/issues/israel/")
+	# process_all_files("training/texts/issues/abortion/")
+	# process_all_files("training/texts/issues/israel/")
+
+	process_all_files('training/texts/tweets/')
+	process_all_files('training/texts/facebook/')
 
 	words=sorted(word_counts.keys(), key=lambda x: seperationFunction(word_counts[x][0],word_counts[x][1]),reverse=True)
 
