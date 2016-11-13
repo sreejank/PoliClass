@@ -12,6 +12,7 @@ from matplotlib.pyplot import imshow, xlabel, ylabel, title, figure, savefig,sho
 from numpy.random import permutation, seed
 from pydotplus import graph_from_dot_data
 import pickle
+from sklearn.externals import joblib
 
 keyWords=[]
 
@@ -137,7 +138,7 @@ buildKeyWords('Word_Counts.csv')
 print(keyWords)
 clf=GaussianNB()
 trainData("training/new_crawl/trainingset/",clf)
-pickle.dump(clf,open("TrainedClassifier","wb"))
+joblib.dump(clf,"TrainedClassifier",protocol=2)
 
 
 
@@ -145,7 +146,7 @@ pickle.dump(clf,open("TrainedClassifier","wb"))
 
 
 def outputClass(text):
-	clf=pickle.load(open("TrainedClassifer",'rb'))
+	clf=joblib.load("TrainedClassifer")
 	tokens = nltk.ngrams(nltk.wordpunct_tokenize(text.lower()),3)
 	for word in tokens:
 		if word[0].isalpha() and word[1].isalpha() and word[2].isalpha():
