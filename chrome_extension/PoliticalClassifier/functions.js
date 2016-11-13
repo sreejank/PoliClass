@@ -97,17 +97,12 @@ function createDisplay(optURL,cacheType,checkType){
   rbPass = create("div", {
     id: "CMY_RB_Pass",
     class: "CMY_RB_ResultCount",
-    innerHTML: "Valid links: 0"
-  });
-  rbWarning = create("div", {
-    id: "CMY_RB_Warning",
-    class: "CMY_RB_ResultCount",
-    innerHTML: "Warnings: 0"
+    innerHTML: "Left links: 0"
   });
   rbFail = create("div", {
     id: "CMY_RB_Fail",
     class: "CMY_RB_ResultCount",
-    innerHTML: "Invalid links: 0"
+    innerHTML: "Right links: 0"
   });
   rbClose = create("div", {
     id: "CMY_RB_Close",
@@ -145,39 +140,22 @@ function createDisplay(optURL,cacheType,checkType){
   reportBox.appendChild(rbQueue);
   reportBox.appendChild(rbOptions);
   reportBox.appendChild(rbPass);
-  reportBox.appendChild(rbWarning);
   reportBox.appendChild(rbFail);
 }
 
-  function updateDisplay(link,warnings,linkStatus){
+  function updateDisplay(link,warnings,linkStatus, linkType){
+    console.log("LINKTYPE="+linkType);
     if (linkStatus) {
-      if (200 <= linkStatus && linkStatus < 400 && warnings.length === 0) {
+      if (linkType == "LEFT") {
         link.classList.add("CMY_Valid");
         passed += 1;
-        rbPass.innerHTML = "Valid links: " + passed;
-      }
-      else if(200 <= linkStatus && linkStatus < 400 && warnings.length > 0){
-        var response;
-        response = "Response " + linkStatus + ": " + link.href + " Warning: ";
-        for (var i = 0; i < warnings.length; i++)
-        {
-          response += warnings[i];
-          if(i < warnings.length-1){
-            response += ",";
-          }
-        }
-        link.classList.add("CMY_Warning");
-        link.innerHTML += " <span class=\"CMY_Response\">"+ linkStatus +"</span>";
-        warning += 1;
-        rbWarning.innerHTML = "Warnings: " + warning; 
-        console.log(response);
+        rbPass.innerHTML = "Left links: " + passed;
       }
       else {
         console.log("Response " + linkStatus + ": " + link.href);
         link.classList.add("CMY_Invalid");
-        link.innerHTML += " <span class=\"CMY_Response\">" + linkStatus + "</span>";
         invalid += 1;
-        rbFail.innerHTML =  "Invalid links: " +invalid;
+        rbFail.innerHTML =  "Right links: " +invalid;
       }
       queued -= 1;
       checked += 1;
@@ -212,12 +190,16 @@ function shouldDOMbeParsed(url,parseDOMoption, checkTypeOption){
 // Timeout for each link is 30+1 seconds
 var timeout = 30000;
 function check(url) {
+    console.log("CHECK: " + url);
     var response = {status:null,document:null};
     return new Promise(function(resolve, reject){
     var XMLHttpTimeout = null;
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function (data) {
         if (xhr.readyState == 4) {
+
+            console.log("GOT STATUS : " + xhr.status)
+            console.log("GOT RESPONSE TEXT: " + xhr.responseText);
             log(xhr);
             clearTimeout(XMLHttpTimeout);
             if (200 <= xhr.status && xhr.status < 400){
@@ -225,12 +207,15 @@ function check(url) {
             }
             response.source = "xhr";
             response.status = xhr.status;
+            response.text = xhr.responseText;
             resolve(response);
         }
     };
 
     try {
-      xhr.open(getOption("checkType"), url, true);
+      var fullUrl = "http://127.0.0.1:5000/classify/" + url;
+      console.log("CHECK FULL URL: " + fullUrl)
+      xhr.open(getOption("checkType"), fullUrl, true);
       xhr.send();
     }
     catch(e){

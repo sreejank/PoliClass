@@ -9,11 +9,7 @@
     color: #fff !important;
 }
 .CMY_Valid {
-    background: #669900 !important;
-    color: #fff !important;
-}
-.CMY_Warning {
-    background: #D5DE23 !important;
+    background: blue !important;
     color: #fff !important;
 }
 .CMY_Response {
@@ -94,7 +90,7 @@
 #CMY_ReportBox #CMY_RB_Pass {
     border-top: 1px solid #bddf5d;
     border-right: 1px solid #8db615;
-    background-color: #9fcd19;
+    background-color: #0000ff;
     clear: both;
 
 }

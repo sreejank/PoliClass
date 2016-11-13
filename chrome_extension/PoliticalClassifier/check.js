@@ -76,6 +76,7 @@ chrome.extension.onMessage.addListener(
     });
     chrome.extension.sendMessage({"action": "check", "url": checkElement.href},
     function (response) {
+      console.log("GOT RESPONSE");
       // Assess Warnings
       var warnings = [];
       warnings = getTrailingHashWarning(options,link,warnings);
@@ -83,6 +84,6 @@ chrome.extension.onMessage.addListener(
       // Pass in the outerHTML, the href attributes defaults to the current page if left empty
       warnings = getEmptyLinkWarning(options,link.outerHTML,warnings);
       warnings = getNoHrefLinkWarning(options,link,warnings);      
-      updateDisplay(link,warnings,response.status);
+      updateDisplay(link,warnings,response.status, response.text);
     });
   }
