@@ -2,13 +2,13 @@ import json
 from watson_developer_cloud import AlchemyLanguageV1
 import unicodedata
 from requests.utils import quote
-from urllib.parse import urlparse
+#from urllib.parse import urlparse
 from lxml import html
 import requests
 import time
 import os
 
-page_name = 'occupied'
+page_name = 'heat'
 
 
 
@@ -68,7 +68,7 @@ def write_article_content(url):
 	print("****** Writing text *******")
 
 	file_name = page_name + '_' + url.split('/')[-2]
-	path = 'new_crawl/occupy/' + file_name + '_d.txt'
+	path = 'new_crawl/heat/' + file_name + '_r.txt'
 
 	output = open(path, 'w')
 	output.write(article_text)
@@ -148,7 +148,24 @@ def process_huffpo_articles():
 			write_article_content(next_url)
 			time.sleep(1)
 
-process_occupy_articles()
+def process_heat_articles():
+	URL = 'http://heatst.com/politics/'
+	page = requests.get(URL)
+	tree = html.fromstring(page.content)
+
+
+	articleurls = tree.xpath('//h2[@class="story-title story-card"]//a/@href') 
+
+	for next_url in articleurls:
+		if next_url.startswith('/'):
+			#relative path
+			next_url = 'http://heatst.com' + next_url
+		if not next_url.startswith('http://'):
+			continue
+		write_article_content(next_url)
+		time.sleep(1)
+
+process_heat_articles()
 
 
 
