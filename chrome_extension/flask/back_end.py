@@ -7,6 +7,7 @@ from watson_developer_cloud import AlchemyLanguageV1
 import unicodedata
 from requests.utils import quote
 import urlparse
+import random
 
 app = Flask(__name__)
 
@@ -20,6 +21,11 @@ def my_form_post():
     #processed_text = text.upper()
     #throw text into classifier
     return "process"
+
+@app.route('/random/<path:link>')
+def give_num(link):
+	scale = random.randint(0,5)
+	return scale
 
 @app.route('/classify/<path:link>')
 def run_script(link):

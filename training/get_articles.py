@@ -63,7 +63,7 @@ def write_article_content(url):
 
 	### GET TEXT OF PAGE AT URL ###
 
-	article_text = get_text_d(url)
+	article_text = get_text(url)
 
 
 	file_name = page_name + '_' + url.split('/')[-1]
