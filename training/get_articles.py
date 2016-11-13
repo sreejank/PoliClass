@@ -8,7 +8,7 @@ import requests
 import time
 import os
 
-page_name = 'mother'
+page_name = 'occupied'
 
 
 
@@ -17,7 +17,7 @@ def get_text(link):
 	#link = urlparse.unquote(link)
 	with open("english_words.txt") as word_file:
 		english_words = set(word.strip().lower() for word in word_file)
-	alchemy_language = AlchemyLanguageV1(api_key='b299a98dda5788d296ef0daa33bf74c54afff1f7')
+	alchemy_language = AlchemyLanguageV1(api_key='396444a062b0b8f61080b23a4b2b461e638bb3a3')
 	txt = json.dumps(alchemy_language.text(url=link),indent=0)
 	txt = json.loads(txt)
 	txt = txt['text']
@@ -62,13 +62,13 @@ def write_article_content(url):
 
 	### GET TEXT OF PAGE AT URL ###
 
-	article_text = get_text_d(url)
+	article_text = get_text(url)
 
 	print("** Reading URL: " + url)
 	print("****** Writing text *******")
 
 	file_name = page_name + '_' + url.split('/')[-2]
-	path = 'new_crawl/mother/' + file_name + '_d.txt'
+	path = 'new_crawl/occupy/' + file_name + '_d.txt'
 
 	output = open(path, 'w')
 	output.write(article_text)
@@ -113,7 +113,7 @@ def process_motherjones_articles():
 			time.sleep(1)
 
 def process_occupy_articles():
-	for page_number in range(11, 20):
+	for page_number in range(21, 30):
 		URL = 'http://occupydemocrats.com/category/politics/page/' + str(page_number) + '/'
 		page = requests.get(URL)
 		tree = html.fromstring(page.content)
@@ -128,7 +128,7 @@ def process_occupy_articles():
 			if not next_url.startswith('http://'):
 				continue
 			write_article_content(next_url)
-			time.sleep(1)
+			#time.sleep(1)
 
 def process_huffpo_articles():
 	for page_number in range(1, 5):
@@ -148,7 +148,7 @@ def process_huffpo_articles():
 			write_article_content(next_url)
 			time.sleep(1)
 
-process_motherjones_articles()
+process_occupy_articles()
 
 
 

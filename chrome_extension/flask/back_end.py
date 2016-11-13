@@ -27,11 +27,17 @@ def give_num(link):
 	scale = random.randint(0,5)
 	return str(scale)
 
-@app.route('/classify/<path:link>')
-def run_script(link):
+@app.route('/classify/<path:link>', methods=['GET'])
+def classify(link):
 	#link is escaped
-	txt = get_text(link)
-	return txt
+	print(link)
+	page_text = get_text(link)
+	if text_is_conservative(text):
+		return "RIGHT"
+	return "LEFT"
+
+def text_is_conservative(text):
+	return True
 
 def get_text(link):
 
