@@ -8,7 +8,7 @@ import requests
 import time
 import os
 
-page_name = 'occupydemocrats'
+page_name = 'mother'
 
 
 
@@ -40,8 +40,10 @@ def get_text_d(url):
 	tree = html.fromstring(page.content)
 	article_text = ''
 
-	p = tree.xpath('//div[@id="content-main"]/p/text()')
+	p = tree.xpath('//p/text()')#//p/text()')
 	for text in p:
+		if(not text[-1].isalpha()):
+			text = text[0:-1]
 		if 'newsletter' not in text.encode('utf-8').lower():
 			article_text += text.encode('utf-8')
 
@@ -59,13 +61,13 @@ def write_article_content(url):
 
 	### GET TEXT OF PAGE AT URL ###
 
-	article_text = get_text(url)
+	article_text = get_text_d(url)
 
 	print("** Reading URL: " + url)
-	print("****** Writing text: " + article_text)
+	print("****** Writing text *******")
 
 	file_name = page_name + '_' + url.split('/')[-2]
-	path = 'texts/articles/' + file_name + '_d.txt'
+	path = 'new_crawl/mother/' + file_name + '_d.txt'
 
 	output = open(path, 'w')
 	output.write(article_text)
@@ -74,9 +76,9 @@ def write_article_content(url):
 
 def process_breitbart_articles():
 
-	for page_number in range(1, 5):
+	for page_number in range(2, 6):
 
-		section = 'national-security' # or 'national-security'
+		section = '2016-presidential-race' # or 'national-security'
 		URL = 'http://www.breitbart.com/' + section + '/page/' + str(page_number) + '/'
 		page = requests.get(URL)
 		tree = html.fromstring(page.content)
@@ -92,13 +94,13 @@ def process_breitbart_articles():
 			time.sleep(1)
 
 def process_motherjones_articles():
-	for page_number in range(1, 5):
+	for page_number in range(1, 15):
 		URL = 'http://www.motherjones.com/politics?page=' + str(page_number)
 		page = requests.get(URL)
 		tree = html.fromstring(page.content)
 
 
-		articleurls = tree.xpath('//h3[@class="title"]/a[@rel="bookmark"/@href') 
+		articleurls = tree.xpath('//h3[@class="title"]//a/@href') 
 
 		for next_url in articleurls:
 			if next_url.startswith('/'):
@@ -107,11 +109,11 @@ def process_motherjones_articles():
 			if not next_url.startswith('http://'):
 				continue
 			write_article_content(next_url)
-			time.sleep(5)
+			time.sleep(1)
 
 def process_occupy_articles():
-	for page_number in range(1, 5):
-		URL = 'http://occupydemocrats.com/category/economy/' #+ str(page_number)
+	for page_number in range(11, 20):
+		URL = 'http://occupydemocrats.com/category/politics/page/' + str(page_number) + '/'
 		page = requests.get(URL)
 		tree = html.fromstring(page.content)
 
@@ -127,7 +129,25 @@ def process_occupy_articles():
 			write_article_content(next_url)
 			time.sleep(1)
 
-process_occupy_articles()
+def process_huffpo_articles():
+	for page_number in range(1, 5):
+		URL = 'http://www.huffingtonpost.com/section/queer-voices' #+ str(page_number)
+		page = requests.get(URL)
+		tree = html.fromstring(page.content)
+
+
+		articleurls = tree.xpath('//li[@class="infinite-post"]//a/@href') 
+
+		for next_url in articleurls:
+			if next_url.startswith('/'):
+				#relative path
+				next_url = 'http://occupydemocrats.com' + next_url
+			if not next_url.startswith('http://'):
+				continue
+			write_article_content(next_url)
+			time.sleep(1)
+
+process_motherjones_articles()
 
 
 
