@@ -8,7 +8,7 @@ import requests
 import time
 import os
 
-page_name = 'occupydemocrats'
+page_name = 'occupy'
 
 
 
@@ -62,10 +62,10 @@ def write_article_content(url):
 	article_text = get_text(url)
 
 	print("** Reading URL: " + url)
-	print("****** Writing text: " + article_text)
+	print("****** Writing text *******")
 
 	file_name = page_name + '_' + url.split('/')[-2]
-	path = 'texts/articles/' + file_name + '_d.txt'
+	path = 'new_crawl/occupy/' + file_name + '_d.txt'
 
 	output = open(path, 'w')
 	output.write(article_text)
@@ -74,9 +74,9 @@ def write_article_content(url):
 
 def process_breitbart_articles():
 
-	for page_number in range(1, 5):
+	for page_number in range(2, 6):
 
-		section = 'national-security' # or 'national-security'
+		section = '2016-presidential-race' # or 'national-security'
 		URL = 'http://www.breitbart.com/' + section + '/page/' + str(page_number) + '/'
 		page = requests.get(URL)
 		tree = html.fromstring(page.content)
@@ -92,7 +92,7 @@ def process_breitbart_articles():
 			time.sleep(1)
 
 def process_motherjones_articles():
-	for page_number in range(1, 5):
+	for page_number in range(1, 15):
 		URL = 'http://www.motherjones.com/politics?page=' + str(page_number)
 		page = requests.get(URL)
 		tree = html.fromstring(page.content)
@@ -107,11 +107,29 @@ def process_motherjones_articles():
 			if not next_url.startswith('http://'):
 				continue
 			write_article_content(next_url)
-			time.sleep(5)
+			time.sleep(1)
 
 def process_occupy_articles():
+	for page_number in range(6, 10):
+		URL = 'http://occupydemocrats.com/category/politics/page/' + str(page_number) + '/'
+		page = requests.get(URL)
+		tree = html.fromstring(page.content)
+
+
+		articleurls = tree.xpath('//li[@class="infinite-post"]//a/@href') 
+
+		for next_url in articleurls:
+			if next_url.startswith('/'):
+				#relative path
+				next_url = 'http://occupydemocrats.com' + next_url
+			if not next_url.startswith('http://'):
+				continue
+			write_article_content(next_url)
+			time.sleep(1)
+
+def process_huffpo_articles():
 	for page_number in range(1, 5):
-		URL = 'http://occupydemocrats.com/category/economy/' #+ str(page_number)
+		URL = 'http://www.huffingtonpost.com/section/queer-voices' #+ str(page_number)
 		page = requests.get(URL)
 		tree = html.fromstring(page.content)
 
