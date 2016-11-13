@@ -89,8 +89,9 @@ def printWords(alpha=0.1):
 	# process_all_files("training/texts/issues/abortion/")
 	# process_all_files("training/texts/issues/israel/")
 
-	process_all_files('training/texts/tweets/')
-	process_all_files('training/texts/facebook/')
+	#process_all_files('training/texts/tweets/')
+	#process_all_files('training/texts/facebook/')
+	process_all_files('training/texts/articles/')
 
 	words=sorted(word_counts.keys(), key=lambda x: seperationFunction(word_counts[x][0],word_counts[x][1]),reverse=True)
 

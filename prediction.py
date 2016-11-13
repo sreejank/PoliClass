@@ -1,4 +1,3 @@
-#s
 import nltk
 import os
 import numpy as np
@@ -10,10 +9,12 @@ def buildKeyWords(keyWordsFileName):
 	global keyWords
 	f=open(keyWordsFileName,'r')
 	for line in f:
-		if line[-1]=='\n':
-			line=line[:-1]
-		if line.isalpha():
-			keyWords.append(line)
+		splits=line.split(',')
+		if splits[0].isalpha():
+			keyWords.append(splits[0])
+
+	keyWords=keyWords[:500]
+
 
 def buildTrainingVector(fileName):
 	global keyWords
@@ -28,6 +29,15 @@ def buildTrainingVector(fileName):
 
 	return trainingVector
 
+def buildTrainingVectorFromText(text):
+	global keyWords
+	trainingVector=[0 for i in range(len(keyWords))]
+	for word in text.split(' '):
+		if word.isalpha():
+			if word in keyWords:
+				trainingVector[keyWords.index(word)]+=1
+
+	return trainingVector
 
 
 def getTrainingMatrix(PATH):
@@ -42,12 +52,13 @@ def getTrainingMatrix(PATH):
 			if ".txt" in filename:
 				dataMatrix.append(buildTrainingVector(PATH+filename))
 				#True=Conservative, False=Liberal
-				labels.append(filename[-7]!='D')
+				labels.append(filename[-5]=='r')
 
 	dataMatrix=np.asarray(dataMatrix)
 	labels=np.asarray(labels)
 	return (dataMatrix,labels)
 
+#Train model on all files in PATH. Output 2-fold crossvalidation accuracies.
 def trainData(PATH,model):
 	mats=getTrainingMatrix(PATH)
 	trainingFeatures=mats[0]
@@ -60,10 +71,12 @@ def trainData(PATH,model):
 
 	model.fit(trainingFeatures,trainingLabels)
 
-	scores=cross_val_score(model,trainingFeatures,trainingLabels,cv=5)
-
+	scores=cross_val_score(model,trainingFeatures,trainingLabels)
 	print(scores)
-	
+
+	print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+#Gets part of article with most heavy weight in terms of keywords.
 def preprocessArticle(text):
 	wordLocations={}
 	index=0
@@ -86,13 +99,10 @@ def preprocessArticle(text):
 	center_of_mass=massdistance/totalMass
 
 
-buildKeyWords('keywords.csv')
+buildKeyWords('Word_Counts.csv')
 print(keyWords)
 clf=GaussianNB()
-trainData("convote_v1.1/data_stage_two/training_set/",clf)
-
-
-
+trainData("training/texts/articles/",clf)
 
 
 
