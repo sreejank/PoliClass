@@ -8,7 +8,7 @@ import requests
 import time
 import os
 
-page_name = 'heat'
+page_name = 'nra'
 
 
 
@@ -68,7 +68,7 @@ def write_article_content(url):
 	print("****** Writing text *******")
 
 	file_name = page_name + '_' + url.split('/')[-2]
-	path = 'new_crawl/heat/' + file_name + '_r.txt'
+	path = 'new_crawl/nra/' + file_name + '_r.txt'
 
 	output = open(path, 'w')
 	output.write(article_text)
@@ -76,7 +76,6 @@ def write_article_content(url):
 	output.close()
 
 def process_breitbart_articles():
-
 	for page_number in range(2, 6):
 
 		section = '2016-presidential-race' # or 'national-security'
@@ -165,7 +164,25 @@ def process_heat_articles():
 		write_article_content(next_url)
 		time.sleep(1)
 
-process_heat_articles()
+def process_nra_articles():
+	for page_number in range(1, 10):
+		URL = 'https://www.nraila.org/news/?page=' + str(page_number)
+		page = requests.get(URL)
+		tree = html.fromstring(page.content)
+
+
+		articleurls = tree.xpath('//div[@class="news-article-headline"]//a/@href') 
+
+		for next_url in articleurls:
+			if next_url.startswith('/'):
+				#relative path
+				next_url = 'https://www.nraila.org' + next_url
+			if not next_url.startswith('http://'):
+				continue
+			write_article_content(next_url)
+			#time.sleep(1)
+
+process_nra_articles()
 
 
 
