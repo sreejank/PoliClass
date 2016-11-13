@@ -3,6 +3,15 @@ import os
 import numpy as np
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import GaussianNB
+from sklearn import svm
+
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
+from scipy.io import loadmat as load
+from numpy import argsort, reshape, transpose, array, zeros
+from matplotlib.pyplot import imshow, xlabel, ylabel, title, figure, savefig,show
+from numpy.random import permutation, seed
+from pydotplus import graph_from_dot_data
+
 keyWords=[]
 
 def buildKeyWords(keyWordsFileName):
@@ -20,13 +29,19 @@ def buildTrainingVector(fileName):
 	global keyWords
 	f=open(fileName,'r')
 	trainingVector=[0 for i in range(len(keyWords))]
+	totalWords=0
 	for line in f:
 		tokens = nltk.wordpunct_tokenize(line.lower())
 		for word in tokens:
 			if word.isalpha():
+				totalWords+=1
 				if word in keyWords:
 					trainingVector[keyWords.index(word)]+=1
-
+		"""
+		for i in range(len(trainingVector)):
+			if totalWords!=0:
+				trainingVector[i]=(trainingVector[i]/totalWords)
+		"""
 	return trainingVector
 
 def buildTrainingVectorFromText(text):
@@ -34,6 +49,7 @@ def buildTrainingVectorFromText(text):
 	trainingVector=[0 for i in range(len(keyWords))]
 	for word in text.split(' '):
 		if word.isalpha():
+			print(word)
 			if word in keyWords:
 				trainingVector[keyWords.index(word)]+=1
 
@@ -64,6 +80,7 @@ def trainData(PATH,model):
 	trainingFeatures=mats[0]
 	trainingLabels=mats[1]
 
+	#np.set_printoptions(threshold=np.nan)
 	print("Training Features: ")
 	print(trainingFeatures)
 	print("Training labels: ")
@@ -71,7 +88,7 @@ def trainData(PATH,model):
 
 	model.fit(trainingFeatures,trainingLabels)
 
-	scores=cross_val_score(model,trainingFeatures,trainingLabels)
+	scores=cross_val_score(model,trainingFeatures,trainingLabels,cv=10)
 	print(scores)
 
 	print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
@@ -98,18 +115,100 @@ def preprocessArticle(text):
 
 	center_of_mass=massdistance/totalMass
 
+def leaveoneout(x,c,model):
+	confusionMatrix=zeros([len(x),len(x)])
+	classifiedCorrectly=0.0
+	total=len(x)
+
+	for i in range(len(x)):
+		out=x[i]
+		out_label=c[i]
+		
+
+		mask = [True for x in range(len(x))]
+		mask=array(mask)
+
+
+		mask[[i]]=False
+
+		inside=x[mask]
+		inside_labels=c[mask]
+
+
+		model.fit(inside,inside_labels)
+
+		prediction=model.predict(out)
+		confusionMatrix[out_label-1,prediction-1]+=1
+		if prediction==out_label:
+			classifiedCorrectly+=1
+
+	accuracy=classifiedCorrectly/total
+	return (confusionMatrix,accuracy)
 
 buildKeyWords('Word_Counts.csv')
 print(keyWords)
 clf=GaussianNB()
-trainData("training/texts/articles/",clf)
+trainData("training/new_crawl/all/",clf)
 
 print("----TESTING-----")
+
+
+
+
+#'training/texts/articles/'
+
+
+#a=leaveoneout(getTrainingMatrix("training/texts/articles/")[0],getTrainingMatrix("training/texts/articles/")[1],clf)
+#print(a[1])
+
+
+
 print(clf.predict(buildTrainingVector("article.txt")))
 print(clf.predict(buildTrainingVector("article2.txt")))
 print(clf.predict(buildTrainingVector("article3.txt")))
-print(clf.predict(buildTrainingVector("article4.txt")))
 print(clf.predict(buildTrainingVector("article5.txt")))
+print(clf.predict(buildTrainingVector("article6.txt")))
 
+def outputClass(text):
+	import random
+	return random.randInt(0,1)
+"""
+preds=[]
+actual=[]
+
+for file in os.listdir('training/texts/articles/'):
+	if ".txt" in file:
+		print("Prediction "+file)
+		if file[-5]=='d':
+			actual.append(False)
+		else:
+			actual.append(True)
+		
+		preds.append(clf.predict(buildTrainingVector('training/texts/articles/'+file))[0])
+
+sameDemo=0
+sameRepub=0
+totalDemos=0
+totalRepubs=0
+same=0
+for i in range(len(preds)):
+	if actual[i]==True:
+		totalRepubs+=1
+		if actual[i]==preds[i]:
+			sameRepub+=1
+			same+=1
+	else:
+		totalDemos+=1
+		if actual[i]==preds[i]:
+			sameDemo+=1
+			same+=1
+
+print("TOTAL ACCURACY: "+str(same/len(preds)))
+print("CONSERVATIVE ACCURACY: "+str(sameRepub/totalRepubs))
+print("LIBERAL ACCURACY: "+str(sameDemo/totalDemos))
+
+print("Predicted demo: "+str(sameDemo))
+print("Total demo: "+str(totalDemos))
+"""
 
 

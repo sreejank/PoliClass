@@ -1,6 +1,7 @@
 from nltk import TweetTokenizer
 import os
 from math import log
+import math
 import re
 
 #Maps word to [democratCount,republicanCount] list.
@@ -9,10 +10,11 @@ word_counts={}
 #Function for sorting key words. 
 def seperationFunction(d,r,alpha=0.1):
 	alpha=0.1
-	ratio=abs(float(d-r)/float(max(d,r)))
-	logarithm=log(d+r)
+	ratio=2*math.tanh(float(max(d,r))/(d+r))
+	logarithm=log(max(d,r))
 	logarithm=logarithm**alpha
 	return ratio*logarithm
+	#return d+r
 
 def is_valid_word(string):
 	return (re.search('[a-zA-Z]', string) is not None) and string[0] != '@' and string[0] != '#' and '://' not in string
@@ -91,13 +93,25 @@ def printWords(alpha=0.1):
 
 	#process_all_files('training/texts/tweets/')
 	#process_all_files('training/texts/facebook/')
-	process_all_files('training/texts/articles/')
+	process_all_files('training/new_crawl/all/')
+
+	maximumLiberal=0
+	maximumCons=0
+	for word in word_counts.keys():
+		if word_counts[word][0]>maximumLiberal:
+			maximumLiberal=word_counts[word][0]
+		if word_counts[word][1]>maximumCons:
+			maximumCons=word_counts[word][1]
+
+	for word in word_counts.keys():
+		word_counts[word][0]=word_counts[word][0]/maximumLiberal*50000
+		word_counts[word][1]=word_counts[word][1]/maximumCons*50000
+
 
 	words=sorted(word_counts.keys(), key=lambda x: seperationFunction(word_counts[x][0],word_counts[x][1]),reverse=True)
 
 	outputfilename="Word_Counts.csv"
 	target=open(outputfilename,'w')
-	target.write("Word, Democrat, Republican\n")
 	for word in words:
 		target.write(word+","+str(word_counts[word][0])+","+str(word_counts[word][1])+","+str(seperationFunction(word_counts[word][0],word_counts[word][1],alpha)))
 		target.write("\n")
