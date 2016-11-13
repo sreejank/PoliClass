@@ -9,7 +9,7 @@ import requests
 import time
 import os
 
-page_name = 'motherjones'
+page_name = 'occupydemocrats'
 
 
 
@@ -42,16 +42,14 @@ def get_text_d(url):
 	tree = html.fromstring(page.content)
 	article_text = ''
 
-	p = tree.xpath('//div[@id="node-body-top"]//p/text()')
+	p = tree.xpath('//div[@id="content-main"]/p/text()')
 	for text in p:
 		if 'newsletter' not in text.encode('utf-8').lower():
 			article_text += text.encode('utf-8')
-			print(text.encode('utf-8'))
 
 	return article_text
 
 def write_article_content(url):
-	print(url)
 	# page = requests.get(url)
 	# tree = html.fromstring(page.content)
 	# article_text = ''
@@ -65,10 +63,11 @@ def write_article_content(url):
 
 	article_text = get_text_d(url)
 
+	print("** Reading URL: " + url)
+	print("****** Writing text: " + article_text)
 
-	file_name = page_name + '_' + url.split('/')[-1]
+	file_name = page_name + '_' + url.split('/')[-2]
 	path = 'texts/articles/' + file_name + '_d.txt'
-	print(path)
 
 	output = open(path, 'w')
 	output.write(article_text)
@@ -101,16 +100,36 @@ def process_motherjones_articles():
 		tree = html.fromstring(page.content)
 
 
-		articleurls = tree.xpath('//h3[@class="title"]//a/@href') 
+		articleurls = tree.xpath('//h3[@class="title"]/a[@rel="bookmark"/@href') 
 
 		for next_url in articleurls:
 			if next_url.startswith('/'):
 				#relative path
 				next_url = 'http://www.motherjones.com' + next_url
+			if not next_url.startswith('http://'):
+				continue
 			write_article_content(next_url)
 			time.sleep(5)
 
-process_motherjones_articles()
+def process_occupy_articles():
+	for page_number in range(1, 5):
+		URL = 'http://occupydemocrats.com/category/economy/' #+ str(page_number)
+		page = requests.get(URL)
+		tree = html.fromstring(page.content)
+
+
+		articleurls = tree.xpath('//li[@class="infinite-post"]//a/@href') 
+
+		for next_url in articleurls:
+			if next_url.startswith('/'):
+				#relative path
+				next_url = 'http://occupydemocrats.com' + next_url
+			if not next_url.startswith('http://'):
+				continue
+			write_article_content(next_url)
+			time.sleep(1)
+
+process_occupy_articles()
 
 
 
