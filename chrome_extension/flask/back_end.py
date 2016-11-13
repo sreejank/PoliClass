@@ -25,7 +25,7 @@ def my_form_post():
 @app.route('/random/<path:link>')
 def give_num(link):
 	scale = random.randint(0,5)
-	return scale
+	return str(scale)
 
 @app.route('/classify/<path:link>')
 def run_script(link):
