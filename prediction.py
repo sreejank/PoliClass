@@ -63,6 +63,27 @@ def trainData(PATH,model):
 	scores=cross_val_score(model,trainingFeatures,trainingLabels,cv=5)
 
 	print(scores)
+	
+def preprocessArticle(text):
+	wordLocations={}
+	index=0
+	counts=[0 for i in range(len(keyWords))]
+	for word in text.split(' '):
+		if word in keyWords:
+			counts[keyWords.index(word)]+=1
+			if word not in wordLocations:
+				wordLocations[word]=[index]
+			else:
+				wordLocations[word].append(index)
+		index+=1
+
+	sortedWords=sorted(wordLocations,key=lambda x: count[keyWords.index(x)])
+
+	totalMass=sum([i * counts[i] for i in range(len(sortedWords))])
+
+	massdistance=sum([i * sum(wordLocations[sortedWords[i]]) for i in range(len(sortedWords))])
+
+	center_of_mass=massdistance/totalMass
 
 
 buildKeyWords('keywords.csv')
