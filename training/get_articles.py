@@ -1,6 +1,5 @@
 import json
 from watson_developer_cloud import AlchemyLanguageV1
-import enchant
 import unicodedata
 from requests.utils import quote
 import urlparse
@@ -23,7 +22,6 @@ def get_text(link):
 	txt = json.loads(txt)
 	txt = txt['text']
 	string = []
-	d = enchant.Dict("en_US")
 	if(type(txt) == type(u'')):
 		txt = unicodedata.normalize('NFKD', txt).encode('ascii','ignore')
 	text_list = txt.split();
