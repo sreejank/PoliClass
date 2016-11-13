@@ -3,6 +3,7 @@ import os
 from math import log
 import math
 import re
+from nltk import ngrams
 
 #Maps word to [democratCount,republicanCount] list.
 word_counts={}
@@ -42,10 +43,11 @@ def process_all_files(PATH):
 			if ".txt" in filename:
 				for line in file:
 					tokens = tokenizer.tokenize(line.lower())
-					for word in tokens:
-						if is_valid_word(word):
+					trigrams=ngrams(tokens,3)
+					for gram in trigrams:
+						if is_valid_word(gram[0]) and is_valid_word(gram[1]) and is_valid_word(gram[2]):
 							isDemocrat=(filename[-5]=="d")
-							process_word(word,isDemocrat)
+							process_word(gram,isDemocrat)
 
 def process_file(PATH, isDemocrat):
 	print("Processing " + PATH)
@@ -93,7 +95,7 @@ def printWords(alpha=0.1):
 
 	#process_all_files('training/texts/tweets/')
 	#process_all_files('training/texts/facebook/')
-	process_all_files('training/new_crawl/all/')
+	process_all_files('training/new_crawl/trainingset/')
 
 	maximumLiberal=0
 	maximumCons=0
@@ -113,7 +115,7 @@ def printWords(alpha=0.1):
 	outputfilename="Word_Counts.csv"
 	target=open(outputfilename,'w')
 	for word in words:
-		target.write(word+","+str(word_counts[word][0])+","+str(word_counts[word][1])+","+str(seperationFunction(word_counts[word][0],word_counts[word][1],alpha)))
+		target.write(word[0]+","+word[1]+","+word[2]+","+","+str(word_counts[word][0])+","+str(word_counts[word][1])+","+str(seperationFunction(word_counts[word][0],word_counts[word][1],alpha)))
 		target.write("\n")
 
 

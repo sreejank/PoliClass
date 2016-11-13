@@ -11,6 +11,7 @@ from numpy import argsort, reshape, transpose, array, zeros
 from matplotlib.pyplot import imshow, xlabel, ylabel, title, figure, savefig,show
 from numpy.random import permutation, seed
 from pydotplus import graph_from_dot_data
+import pickle
 
 keyWords=[]
 
@@ -19,8 +20,7 @@ def buildKeyWords(keyWordsFileName):
 	f=open(keyWordsFileName,'r')
 	for line in f:
 		splits=line.split(',')
-		if splits[0].isalpha():
-			keyWords.append(splits[0])
+		keyWords.append((splits[0],splits[1],splits[2]))
 
 	keyWords=keyWords[:500]
 
@@ -31,30 +31,18 @@ def buildTrainingVector(fileName):
 	trainingVector=[0 for i in range(len(keyWords))]
 	totalWords=0
 	for line in f:
-		tokens = nltk.wordpunct_tokenize(line.lower())
+		tokens = nltk.ngrams(nltk.wordpunct_tokenize(line.lower()),3)
 		for word in tokens:
-			if word.isalpha():
+			if word[0].isalpha() and word[1].isalpha() and word[2].isalpha():
 				totalWords+=1
 				if word in keyWords:
 					trainingVector[keyWords.index(word)]+=1
-		"""
+		
 		for i in range(len(trainingVector)):
 			if totalWords!=0:
-				trainingVector[i]=(trainingVector[i]/totalWords)
-		"""
+				trainingVector[i]=1+(trainingVector[i]/totalWords)
+		
 	return trainingVector
-
-def buildTrainingVectorFromText(text):
-	global keyWords
-	trainingVector=[0 for i in range(len(keyWords))]
-	for word in text.split(' '):
-		if word.isalpha():
-			print(word)
-			if word in keyWords:
-				trainingVector[keyWords.index(word)]+=1
-
-	return trainingVector
-
 
 def getTrainingMatrix(PATH):
 	print("Training from directory "+PATH)
@@ -148,43 +136,48 @@ def leaveoneout(x,c,model):
 buildKeyWords('Word_Counts.csv')
 print(keyWords)
 clf=GaussianNB()
-trainData("training/new_crawl/all/",clf)
-
-print("----TESTING-----")
-
+trainData("training/new_crawl/trainingset/",clf)
+pickle.dump(clf,open("TrainedClassifier","wb"))
 
 
 
-#'training/texts/articles/'
 
 
-#a=leaveoneout(getTrainingMatrix("training/texts/articles/")[0],getTrainingMatrix("training/texts/articles/")[1],clf)
-#print(a[1])
-
-
-
-print(clf.predict(buildTrainingVector("article.txt")))
-print(clf.predict(buildTrainingVector("article2.txt")))
-print(clf.predict(buildTrainingVector("article3.txt")))
-print(clf.predict(buildTrainingVector("article5.txt")))
-print(clf.predict(buildTrainingVector("article6.txt")))
 
 def outputClass(text):
-	import random
-	return random.randInt(0,1)
+	clf=pickle.load(open("TrainedClassifer",'rb'))
+	tokens = nltk.ngrams(nltk.wordpunct_tokenize(text.lower()),3)
+	for word in tokens:
+		if word[0].isalpha() and word[1].isalpha() and word[2].isalpha():
+			totalWords+=1
+			if word in keyWords:
+				trainingVector[keyWords.index(word)]+=1
+		
+	for i in range(len(trainingVector)):
+		if totalWords!=0:
+			trainingVector[i]=1+(trainingVector[i]/totalWords)
+
+	return clf.predict(trainingVector)[0]
+		
+	
+
+
+
+
 """
+print("----TESTING-----")
 preds=[]
 actual=[]
-
-for file in os.listdir('training/texts/articles/'):
+for file in os.listdir('training/new_crawl/testingset/'):
 	if ".txt" in file:
 		print("Prediction "+file)
 		if file[-5]=='d':
 			actual.append(False)
 		else:
 			actual.append(True)
-		
-		preds.append(clf.predict(buildTrainingVector('training/texts/articles/'+file))[0])
+
+		preds.append(clf.predict(buildTrainingVector('training/new_crawl/testingset/'+file))[0])
+		print(clf.predict_proba(buildTrainingVector('training/new_crawl/testingset/'+file))[0])
 
 sameDemo=0
 sameRepub=0
@@ -209,6 +202,7 @@ print("LIBERAL ACCURACY: "+str(sameDemo/totalDemos))
 
 print("Predicted demo: "+str(sameDemo))
 print("Total demo: "+str(totalDemos))
+
+print("Predicted repub: "+str(sameRepub))
+print("Total repub: "+str(totalRepubs))
 """
-
-
