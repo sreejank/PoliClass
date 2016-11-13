@@ -104,5 +104,12 @@ print(keyWords)
 clf=GaussianNB()
 trainData("training/texts/articles/",clf)
 
+print("----TESTING-----")
+print(clf.predict(buildTrainingVector("article.txt")))
+print(clf.predict(buildTrainingVector("article2.txt")))
+print(clf.predict(buildTrainingVector("article3.txt")))
+print(clf.predict(buildTrainingVector("article4.txt")))
+print(clf.predict(buildTrainingVector("article5.txt")))
+
 
 

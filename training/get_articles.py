@@ -2,7 +2,7 @@ import json
 from watson_developer_cloud import AlchemyLanguageV1
 import unicodedata
 from requests.utils import quote
-import urlparse
+from urllib.parse import urlparse
 from lxml import html
 import requests
 import time
@@ -27,11 +27,12 @@ def get_text(link):
 	text_list = txt.split();
 
 	for elem in text_list:
-		if(not elem[-1].isalpha()):
-			elem = elem[0:-1]
-		elem = elem.lower()
-		if elem in english_words:
-			string.append(elem)
+		if type(elem)==type("a"):
+			if(not elem[-1].isalpha()):
+				elem = elem[0:-1]
+			elem = elem.lower()
+			if elem in english_words:
+				string.append(elem)
 	ans = ' '.join(string)
 	return ans
 
