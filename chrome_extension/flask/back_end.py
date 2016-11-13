@@ -8,6 +8,7 @@ import unicodedata
 from requests.utils import quote
 import urlparse
 import random
+from '../../train.py' import outputClass
 
 app = Flask(__name__)
 
@@ -24,8 +25,12 @@ def my_form_post():
 
 @app.route('/random/<path:link>')
 def give_num(link):
-	scale = random.randint(0,5)
-	return str(scale)
+	# print(link)
+	# page_text = get_text(link)
+	r = random.randint(0,1)
+	if r:
+		return "RIGHT"
+	return "LEFT"
 
 @app.route('/classify/<path:link>', methods=['GET'])
 def classify(link):

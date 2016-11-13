@@ -77,6 +77,7 @@ chrome.extension.onMessage.addListener(
     chrome.extension.sendMessage({"action": "check", "url": checkElement.href},
     function (response) {
       console.log("GOT RESPONSE");
+      console.log("Classified: " + response.text);
       // Assess Warnings
       var warnings = [];
       warnings = getTrailingHashWarning(options,link,warnings);
