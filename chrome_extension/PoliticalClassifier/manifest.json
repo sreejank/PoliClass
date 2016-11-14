@@ -9,6 +9,9 @@
    "name": "Check My Links",
    "permissions": [ "storage", "tabs", "*://*/*" ],
    "version": "1.0.0",
+   "background" : {
+    "scripts" : ["background.js"]
+  },
    "manifest_version": 2,
    "background": { "scripts": ["functions.js","background.js","db.js","check.js"] },
    "content_scripts": [

@@ -213,7 +213,7 @@ function check(url) {
     };
 
     try {
-      var fullUrl = "http://127.0.0.1:5000/random/" + encodeURIComponent(url);
+      var fullUrl = "http://127.0.0.1:5000/classify/" + encodeURIComponent(url);
       console.log("CHECK FULL URL: " + fullUrl)
       xhr.open(getOption("checkType"), fullUrl, true);
       xhr.send();

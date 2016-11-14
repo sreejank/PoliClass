@@ -1,10 +1,16 @@
 chrome.extension.onMessage.addListener(onRequest);
-
+var pressed = false;
 chrome.browserAction.onClicked.addListener(function (tab) {
-    chrome.tabs.executeScript(tab.id, {file:'functions.js'});
-    chrome.tabs.executeScript(tab.id, {file:'check.js'}, function () {
-        chrome.tabs.sendMessage(tab.id, {options:getOptions(), action:"initial"});
-    });
+    console.log("Icon pressed");
+    if(pressed == false){
+        chrome.tabs.executeScript(tab.id, {file:'functions.js'});
+        chrome.tabs.executeScript(tab.id, {file:'check.js'}, function () {
+            chrome.tabs.sendMessage(tab.id, {options:getOptions(), action:"initial"});
+        });
+        pressed = true;
+    }
+    else{chrome.tabs.reload();}
+    
 });
 
 chrome.runtime.onInstalled.addListener(function(details){
