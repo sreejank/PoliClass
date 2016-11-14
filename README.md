@@ -1,6 +1,6 @@
 # YHack2016
 
-Daniel Marc Ernst has a funny face.
-But not as funny as Sreejan's.
+Sreejan Kumar, Thomas Zhang, Daniel Ernst, Ken Cheng
 
-<3
+A Chrome extension that uses machine learning to identify links with articles that have liberal/conservative bias.
+
