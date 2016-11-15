@@ -1,6 +1,6 @@
 # YHack2016
 
-Sreejan Kumar, Thomas Zhang, Daniel Ernst, Ken Cheng
+Daniel Ernst, Ken Cheng, Sreejan Kumar, Thomas Zhang
 
 A Chrome extension that uses machine learning to identify links with articles that have liberal/conservative bias.
 
